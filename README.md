@@ -159,8 +159,6 @@ git pull
 docker-compose up -d --build
 ```
 
-**To stop the bot:** Press `Ctrl + C` in the terminal
-
 ## Customization
 
 You can modify the `CHECK_INTERVAL` in your `.env` file to change how often the bot checks your stream status:
