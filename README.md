@@ -7,7 +7,7 @@ A Discord bot that automatically sends notifications to your server when you go 
 - Automatic live stream detection
 - Notifications with @everyone mention
 - Embedded messages with stream thumbnail
-- Shows game, title, and viewer count
+- Shows game and stream title
 - Checks stream status every 60 seconds (configurable)
 - No spam - only one notification per stream
 
@@ -24,8 +24,8 @@ Before you begin, make sure you have:
 ### 1. Clone the Repository
 
 ```bash
-git clone YOUR_REPOSITORY_URL_HERE
-cd twitch-discord-bot
+git clone https://github.com/hugo-lanzafame/twitch-alert-discord-bot
+cd twitch-alert-discord-bot
 ```
 
 ### 2. Configure Environment Variables
