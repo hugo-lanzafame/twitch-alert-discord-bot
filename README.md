@@ -1,6 +1,6 @@
 # Twitch Live Notifier Bot for Discord
 
-A Discord bot that automatically sends notifications to your server when you go live on Twitch. Get embedded messages with stream details, game info, and viewer count!
+A Discord bot that automatically sends notifications to your server when you go live on Twitch. Get embedded messages with stream details and game info!
 
 ## Features
 
@@ -177,13 +177,17 @@ Don't set it too low to avoid rate limits!
 twitch-alert-discord-bot/
 │
 ├── node_modules/          # Dependencies (auto-generated)
+├── .dockerignore          # Docker ignore file
 ├── .env                   # Your configuration (DO NOT SHARE!)
-├── .env.example          # Configuration template
-├── .gitignore            # Git ignore file
-├── bot.js                # Main bot code
-├── package.json          # Project metadata
-├── package-lock.json     # Dependency lock file
-└── README.md             # This file
+├── .env.example           # Configuration template
+├── .gitignore             # Git ignore file
+├── bot.js                 # Main bot code
+├── docker-compose.yml     # Docker compose configuration
+├── Dockerfile             # Docker image configuration
+├── LICENSE.md             # Project license
+├── package.json           # Project metadata
+├── package-lock.json      # Dependency lock file
+└── README.md              # This file
 ```
 
 ## Security
