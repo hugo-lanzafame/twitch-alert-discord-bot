@@ -15,7 +15,7 @@ A Discord bot that automatically sends notifications to your server when you go 
 
 Before you begin, make sure you have:
 
-- [Node.js](https://nodejs.org) (version 16.9.0 or higher)
+- [Node.js](https://nodejs.org) (version 16.9.0 or higher) (if you don't use docker)
 - A Discord account and server
 - A Twitch account
 
@@ -28,18 +28,7 @@ git clone YOUR_REPOSITORY_URL_HERE
 cd twitch-discord-bot
 ```
 
-### 2. Install Dependencies
-
-```bash
-npm install
-```
-
-This will install:
-- `discord.js` - Discord API library
-- `axios` - HTTP client for Twitch API
-- `dotenv` - Environment variables manager
-
-### 3. Configure Environment Variables
+### 2. Configure Environment Variables
 
 1. Copy the `.env.example` file and rename it to `.env`:
    ```bash
@@ -123,7 +112,20 @@ Use **lowercase** letters only!
 
 Once everything is configured, start the bot with:
 
+### Option 1: With Node.js (Direct)
+
 ```bash
+# Install Dependencies
+npm install
+```
+
+This will install:
+- `discord.js` - Discord API library
+- `axios` - HTTP client for Twitch API
+- `dotenv` - Environment variables manager
+
+```bash
+# Start the bot
 node bot.js
 ```
 
@@ -131,6 +133,30 @@ You should see:
 ```
 Bot connected as YourBot#1234
 Monitoring stream status...
+```
+
+**To stop the bot:** Press `Ctrl + C` in the terminal
+
+### Option 2: With Docker (Recommended for servers)
+
+If you prefer using Docker or don't have Node.js installed:
+
+```bash
+# Build and start the bot
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the bot
+docker-compose stop
+
+# Restart the bot
+docker-compose restart
+
+# Update and rebuild
+git pull
+docker-compose up -d --build
 ```
 
 **To stop the bot:** Press `Ctrl + C` in the terminal
