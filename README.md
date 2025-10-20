@@ -15,7 +15,7 @@ A Discord bot that automatically sends notifications to your server when you go 
 
 Before you begin, make sure you have:
 
-- [Node.js](https://nodejs.org) (version 16.9.0 or higher) (if you don't use docker)
+- [Docker](https://www.docker.com/) and Docker Compose (recommended) OR [Node.js](https://nodejs.org) (version 18.0.0 or higher) (see below why)
 - A Discord account and server
 - A Twitch account
 
@@ -50,7 +50,7 @@ cd twitch-alert-discord-bot
 6. Click **"Reset Token"** and then **"Copy"**
 7. Paste it in your `.env` file as `DISCORD_TOKEN`
 
-**IMPORTANT:** Never share this token publicly!
+**IMPORTANT:** The Token can only be viewed once. Save it immediately! Never share this token publicly!
 
 **Invite the Bot to Your Server:**
 
@@ -80,7 +80,7 @@ cd twitch-alert-discord-bot
 6. Copy the **Client ID** and paste as `TWITCH_CLIENT_ID` in `.env`
 7. Click **"New Secret"**, copy it immediately and paste as `TWITCH_CLIENT_SECRET` in `.env`
 
-**WARNING:** The Client Secret can only be viewed once. Save it immediately! Never share this token publicly!
+**WARNING:** The Client Secret can only be viewed once. Save it immediately! Never share this Client Secret publicly!
 
 ### 3. TWITCH_USERNAME
 
@@ -108,38 +108,24 @@ Use **lowercase** letters only!
    - Click **"Copy Channel ID"**
    - Paste it as `DISCORD_CHANNEL_ID` in `.env`
 
+**NB:** Make sure your bot has the permission to send messages, embed links and mention everyone in the selected channel.
+
+### 5. MONITORING SETTINGS (Optional)
+
+These settings control how the bot monitors your stream and handles errors:
+
+- **CHECK_INTERVAL** - Time in milliseconds between stream status checks. Default: `60000` (1 minute)
+- **MAX_RETRIES** - Maximum number of retry attempts for failed API requests. Default: `3`
+- **RETRY_DELAY** - Delay in milliseconds between retry attempts. Default: `2000` (2 seconds)
+- **REQUEST_TIMEOUT** - Maximum time in milliseconds to wait for API responses. Default: `10000` (10 seconds)
+
 ## Running the Bot
 
 Once everything is configured, start the bot with:
 
-### Option 1: With Node.js (Direct)
+### Option 1: With Docker
 
-```bash
-# Install Dependencies
-npm install
-```
-
-This will install:
-- `discord.js` - Discord API library
-- `axios` - HTTP client for Twitch API
-- `dotenv` - Environment variables manager
-
-```bash
-# Start the bot
-node bot.js
-```
-
-You should see:
-```
-Bot connected as YourBot#1234
-Monitoring stream status...
-```
-
-**To stop the bot:** Press `Ctrl + C` in the terminal
-
-### Option 2: With Docker (Recommended for servers)
-
-If you prefer using Docker or don't have Node.js installed:
+If you want your bot to run 24/7 on a server (VPS, Raspberry Pi, or dedicated server). Docker provides automatic restarts on crashes, isolated environment, centralized logging, and ensures the bot runs identically everywhere. Perfect for production deployment where you want a "set it and forget it" solution.
 
 ```bash
 # Build and start the bot
@@ -154,10 +140,41 @@ docker-compose stop
 # Restart the bot
 docker-compose restart
 
-# Update and rebuild
+# Update
 git pull
 docker-compose up -d --build
 ```
+
+### Option 2: With Node.js
+
+If you're actively developing the bot, testing it temporarily, or only need it running while you're at your computer. Direct Node.js execution is simpler for quick tests and allows instant code changes without rebuilding. Great for development and learning, but requires you to manually start the bot each time.
+
+```bash
+# Install Dependencies
+npm install
+```
+
+This will install:
+- `discord.js` - Discord API library
+- `axios` - HTTP client for Twitch API
+- `dotenv` - Environment variables manager
+
+```bash
+# Start the bot
+node ./src/index.js
+```
+
+You should see:
+```
+[dotenv@17.2.3] injecting env (6) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[20/10/2025 04:53:47] [SUCCESS] Configuration validated
+[20/10/2025 04:53:47] [SUCCESS] Discord bot connected as YourBot#1234
+[20/10/2025 04:53:47] [STREAM] Monitoring your_channel every 60000ms
+[20/10/2025 04:53:48] [SUCCESS] Twitch access token obtained
+[20/10/2025 04:53:48] [DEBUG] your_channel is offline
+```
+
+**To stop the bot:** Press `Ctrl + C` in the terminal
 
 ## Customization
 
@@ -174,18 +191,27 @@ Don't set it too low to avoid rate limits!
 ```
 twitch-alert-discord-bot/
 │
-├── node_modules/          # Dependencies (auto-generated)
-├── .dockerignore          # Docker ignore file
-├── .env                   # Your configuration (DO NOT SHARE!)
-├── .env.example           # Configuration template
-├── .gitignore             # Git ignore file
-├── bot.js                 # Main bot code
-├── docker-compose.yml     # Docker compose configuration
-├── Dockerfile             # Docker image configuration
-├── LICENSE.md             # Project license
-├── package.json           # Project metadata
-├── package-lock.json      # Dependency lock file
-└── README.md              # This file
+├── src/
+│   ├── config/
+│   │   └── index.js             # Configuration and validation
+│   ├── services/
+│   │   ├── twitch.service.js    # Twitch API integration
+│   │   └── discord.service.js   # Discord API integration
+│   ├── utils/
+│   │   ├── logger.js            # Logging utility
+│   │   └── retry.js             # Retry logic for network errors
+│   └── index.js                 # Main application entry point
+├── node_modules/                # Dependencies (auto-generated)
+├── .env                         # Your configuration (DO NOT SHARE!)
+├── .env.example                 # Configuration template
+├── .gitignore                   # Git ignore file
+├── .dockerignore                # Docker ignore file
+├── Dockerfile                   # Docker image configuration
+├── docker-compose.yml           # Docker Compose configuration
+├── package.json                 # Project metadata and dependencies
+├── package-lock.json            # Dependency lock file
+├── LICENSE.md                   # License file
+└── README.md                    # This file
 ```
 
 ## Security

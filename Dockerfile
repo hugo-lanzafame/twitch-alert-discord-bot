@@ -10,8 +10,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy application files
-COPY . .
+# Copy source code
+COPY src/ ./src/
 
-# Run the bot
-CMD ["node", "bot.js"]
+# Run as non-root user
+USER node
+
+CMD ["node", "src/index.js"]
