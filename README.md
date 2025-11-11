@@ -83,7 +83,7 @@ git pull
 docker-compose up -d --build
 ```
 
-### Option 2: With Node.js
+#### Option 2: With Node.js
 
 If you're actively developing the bot, testing it temporarily, or only need it running while you're at your computer. Direct Node.js execution is simpler for quick tests and allows instant code changes without rebuilding. Great for development and learning, but requires you to manually start the bot each time.
 
