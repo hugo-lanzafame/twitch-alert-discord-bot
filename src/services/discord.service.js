@@ -38,6 +38,7 @@ class DiscordService {
             await this.client.login(CONFIG.discord.token);
         } catch (error) {
             Logger.error('Failed to login to Discord:', error.message);
+
             throw error;
         }
     }
@@ -80,10 +81,10 @@ class DiscordService {
                 throw new Error('Discord client is not ready');
             }
 
-            const channel = await this.client.channels.fetch(CONFIG.discord.channelId);
+            const channel = await this.client.channels.fetch(CONFIG.features.liveNotification.channelId);
             
             if (!channel) {
-                throw new Error(`Channel ${CONFIG.discord.channelId} not found`);
+                throw new Error(`Live channel ${CONFIG.features.liveNotification.channelId} not found`);
             }
 
             if (!channel.isTextBased()) {
@@ -100,6 +101,7 @@ class DiscordService {
             Logger.success('Live notification sent successfully');
         } catch (error) {
             Logger.error('Failed to send live notification:', error.message);
+
             throw error;
         }
     }
@@ -112,7 +114,7 @@ class DiscordService {
     buildLiveEmbed(streamData) {
         const thumbnailUrl = streamData.thumbnail_url
             .replace('{width}', '1920')
-            .replace('{height}', '1080') + `?t=${Date.now()}`; // Cache busting
+            .replace('{height}', '1080') + `?t=${Date.now()}`;
 
         return new EmbedBuilder()
             .setColor('#9146FF')
@@ -134,6 +136,76 @@ class DiscordService {
             .setImage(thumbnailUrl)
             .setTimestamp()
             .setFooter({ text: 'Twitch Live Notification' });
+    }
+
+    /**
+     * Send the top clips notification to Discord channel
+     * @param {Object[]} clips - List of clips
+     * @returns {Promise<void>}
+     */
+    async sendClipsNotification(clips) {
+        try {
+            if (!this.isReady) {
+                throw new Error('Discord client is not ready');
+            }
+
+            const channel = await this.client.channels.fetch(CONFIG.features.topClips.channelId);
+
+            if (!channel) {
+                throw new Error(`Clips channel ${CONFIG.features.topClips.channelId} not found`);
+            }
+
+            if (!channel.isTextBased()) {
+                throw new Error('Clips channel is not a text channel');
+            }
+
+            const embed = this.buildClipsEmbed(clips);
+
+            await channel.send({
+                content: `Here are the Top ${clips.length} clips!`,
+                embeds: [embed]
+            });
+
+            Logger.success('Clips notification sent successfully');
+        } catch (error) {
+            Logger.error('Failed to send clips notification. Full error details:', error);
+
+            throw error;
+        }
+    }
+
+    /**
+     * Build Discord embed for top clips notification
+     * @param {Object[]} clips - List of clips
+     * @returns {EmbedBuilder} Discord embed
+     */
+    buildClipsEmbed(clips) {
+        const fields = [];
+
+        clips.forEach((clip, index) => {
+            const rank = index + 1;
+            const rankPrefixes = ['🥇', '🥈', '🥉'];
+            const prefix = rankPrefixes[index] || `N°${rank}`;
+
+            fields.push({
+                name: `${prefix}. ${clip.title || 'Not specified'}`,
+                value: `by ${clip.creator_name} with **${clip.view_count}** views\n[**Click here to watch!**](${clip.url}) `,
+                inline: false
+            });
+        });
+
+        const description = `We've got the Top **${clips.length}** clips from **${CONFIG.twitch.username}** over the last 24 hours! Check out the best moments below.`;
+        const thumbnailUrl = clips[0]?.thumbnail_url.replace('-preview-480x272.jpg', '.jpg') || '';
+
+        return new EmbedBuilder()
+            .setColor('#9146FF')
+            .setTitle(`🟣 Top clips are READY!`)
+            .setURL(`https://twitch.tv/${CONFIG.twitch.username}/videos?filter=clips&range=24hr`)
+            .addFields(fields)
+            .setDescription(description)
+            .setImage(thumbnailUrl) 
+            .setTimestamp()
+            .setFooter({ text: 'Twitch Top Clips' });
     }
 }
 

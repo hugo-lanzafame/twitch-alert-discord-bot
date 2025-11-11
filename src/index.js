@@ -1,124 +1,42 @@
 const { CONFIG, validateConfig } = require('./config');
 const TwitchService = require('./services/twitch.service');
 const DiscordService = require('./services/discord.service');
+const SchedulerService = require('./services/scheduler.service');
+const MonitorService = require('./services/monitor.service'); // New Monitor Service
 const Logger = require('./utils/logger');
 
 /**
- * Main stream monitor class
+ * Main application Orchestrator
  */
-class StreamMonitor {
+class BotOrchestrator {
     constructor() {
+        // Initialize Core Services
         this.twitchService = new TwitchService();
         this.discordService = new DiscordService();
-        this.isLive = false;
-        this.checkInProgress = false;
-        this.checkInterval = null;
+        
+        // Initialize Feature Services (Dependency Injection)
+        this.monitorService = new MonitorService(this.twitchService, this.discordService);
+        this.schedulerService = new SchedulerService(this.twitchService, this.discordService); 
     }
 
     /**
-     * Initialize and start the monitor
+     * Initialize and start the bot
      */
     async start() {
         try {
-            // Validate configuration
             validateConfig();
             Logger.success('Configuration validated');
 
-            // Setup graceful shutdown
             this.setupGracefulShutdown();
 
-            // Connect to Discord
             await this.discordService.login();
             await this.discordService.waitUntilReady();
-
-            Logger.info(
-                `Monitoring ${CONFIG.twitch.username} every ${CONFIG.monitor.checkInterval}ms`
-            );
-
-            // Start monitoring
-            this.startMonitoring();
-
+            
+            this.monitorService.start();
+            this.schedulerService.start();
         } catch (error) {
             Logger.error('Fatal error during startup:', error.message);
             process.exit(1);
-        }
-    }
-
-    /**
-     * Start the monitoring loop
-     */
-    startMonitoring() {
-        // First check immediately
-        this.checkStreamStatus();
-        
-        // Schedule regular checks
-        this.checkInterval = setInterval(() => {
-            this.checkStreamStatus();
-        }, CONFIG.monitor.checkInterval);
-    }
-
-    /**
-     * Stop the monitoring loop
-     */
-    stopMonitoring() {
-        if (this.checkInterval) {
-            clearInterval(this.checkInterval);
-            this.checkInterval = null;
-            Logger.info('Monitoring stopped');
-        }
-    }
-
-    /**
-     * Check the current stream status
-     */
-    async checkStreamStatus() {
-        // Prevent concurrent checks
-        if (this.checkInProgress) {
-            Logger.debug('Check already in progress, skipping...');
-            return;
-        }
-
-        this.checkInProgress = true;
-
-        try {
-            const streamData = await this.twitchService.getStreamData(CONFIG.twitch.username);
-            await this.handleStreamStatusChange(streamData);
-
-        } catch (error) {
-            Logger.error('Error checking stream status:', error.message);
-        } finally {
-            this.checkInProgress = false;
-        }
-    }
-
-    /**
-     * Handle stream status changes
-     * @param {Object|null} streamData - Current stream data
-     */
-    async handleStreamStatusChange(streamData) {
-        const wasLive = this.isLive;
-        const isNowLive = !!streamData;
-
-        if (isNowLive && !wasLive) {
-            // Stream just started
-            this.isLive = true;
-            Logger.info(`${streamData.user_name} is now LIVE!`);
-            
-            try {
-                await this.discordService.sendLiveNotification(streamData);
-            } catch (error) {
-                Logger.error('Failed to send notification:', error.message);
-            }
-            
-        } else if (!isNowLive && wasLive) {
-            // Stream just ended
-            this.isLive = false;
-            Logger.info(`${CONFIG.twitch.username} stream has ended`);
-            
-        } else if (isNowLive) {
-            Logger.debug(`${streamData.user_name} is still live`);
-        } else {
-            Logger.debug(`${CONFIG.twitch.username} is offline`);
         }
     }
 
@@ -130,7 +48,9 @@ class StreamMonitor {
             Logger.info(`${signal} received, shutting down gracefully...`);
             
             try {
-                this.stopMonitoring();
+                this.monitorService.stop(); 
+                this.schedulerService.stop(); 
+                
                 await this.discordService.destroy();
                 Logger.success('Shutdown complete');
                 process.exit(0);
@@ -156,5 +76,5 @@ process.on('uncaughtException', (error) => {
 });
 
 // Start the application
-const monitor = new StreamMonitor();
-monitor.start();
+const bot = new BotOrchestrator();
+bot.start();
