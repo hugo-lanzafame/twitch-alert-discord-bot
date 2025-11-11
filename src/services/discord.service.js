@@ -91,7 +91,7 @@ class DiscordService {
                 throw new Error('Target channel is not a text channel');
             }
 
-            const embed = this.buildLiveEmbed(streamData);
+            const embed = this.buildLiveNotificationEmbed(streamData);
 
             await channel.send({
                 content: '@everyone The stream has started!',
@@ -111,7 +111,7 @@ class DiscordService {
      * @param {Object} streamData - Twitch stream data
      * @returns {EmbedBuilder} Discord embed
      */
-    buildLiveEmbed(streamData) {
+    buildLiveNotificationEmbed(streamData) {
         const thumbnailUrl = streamData.thumbnail_url
             .replace('{width}', '1920')
             .replace('{height}', '1080') + `?t=${Date.now()}`;
@@ -143,7 +143,7 @@ class DiscordService {
      * @param {Object[]} clips - List of clips
      * @returns {Promise<void>}
      */
-    async sendClipsNotification(clips) {
+    async sendTopClips(clips) {
         try {
             if (!this.isReady) {
                 throw new Error('Discord client is not ready');
@@ -159,7 +159,7 @@ class DiscordService {
                 throw new Error('Clips channel is not a text channel');
             }
 
-            const embed = this.buildClipsEmbed(clips);
+            const embed = this.buildTopClipsEmbed(clips);
 
             await channel.send({
                 content: `Here are the Top ${clips.length} clips!`,
@@ -179,7 +179,7 @@ class DiscordService {
      * @param {Object[]} clips - List of clips
      * @returns {EmbedBuilder} Discord embed
      */
-    buildClipsEmbed(clips) {
+    buildTopClipsEmbed(clips) {
         const fields = [];
 
         clips.forEach((clip, index) => {

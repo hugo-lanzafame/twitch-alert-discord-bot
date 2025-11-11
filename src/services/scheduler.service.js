@@ -77,7 +77,7 @@ class SchedulerService {
 
             const topClips = clips.slice(0, count);
             
-            await this.discordService.sendClipsNotification(topClips);
+            await this.discordService.sendTopClips(topClips);
         } catch (error) {
             Logger.error('[SCHEDULER] Error during top clips job:', error.message);
         }
