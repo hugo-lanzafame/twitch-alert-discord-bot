@@ -1,14 +1,15 @@
 {
   "name": "discord-bot",
-  "version": "1.1.0",
-  "main": "bot.js",
+  "version": "2.0.0",
+  "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["discord", "bot", "twitch", "notifications", "clips"],
+  "author": "hugo-lanzafame",
+  "license": "MIT",
+  "description": "A Discord bot that sends automatic live notifications and daily top clips from Twitch",
   "dependencies": {
     "axios": "^1.12.2",
     "discord.js": "^14.23.2",
