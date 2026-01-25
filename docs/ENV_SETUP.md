@@ -62,9 +62,15 @@ Use **lowercase** letters only!
 
 ## Channel and Feature Configuration
 
+This bot is modular. You only need to configure the variables for the features you actually want to use.
+- To enable a feature: Fill in all its specific variables.
+- To disable a feature: Leave its variables blank (or remove them).
+
+Only complete the sections that match your specific use case.
+
 ### Finding a Discord Channel ID
 
-You will need the Channel ID for live alerts (`LIVE_NOTIFICATION_CHANNEL_ID`) and for daily clips (`TOP_CLIPS_CHANNEL_ID`).
+You will need the Channel ID for live alerts (`LIVE_NOTIFICATION_CHANNEL_ID`), for daily clips (`TOP_CLIPS_CHANNEL_ID`) and for crafty (`CRAFTY_CHANNEL_ID`).
 
 1.  **Enable Developer Mode in Discord:**
       * Open Discord User Settings.
@@ -78,14 +84,68 @@ You will need the Channel ID for live alerts (`LIVE_NOTIFICATION_CHANNEL_ID`) an
 
 **IMPORTANT:** Ensure your bot has the `Send Messages`, `Embed Links`, and `Mention Everyone` permissions in the selected channel.
 
-### Channel Variables
+#### Channel Variables
 
   * **`LIVE_NOTIFICATION_CHANNEL_ID`**: The ID of the channel where the bot should post **LIVE** stream alerts. Leave blank to **disable** this feature.
   * **`TOP_CLIPS_CHANNEL_ID`**: The ID of the channel where the bot should post the **Top Clips** digest. Leave blank to **disable** this feature.
+  * **`CRAFTY_CHANNEL_ID`**: The ID of the channel where users can use the crafty commands. Leave blank to allow commands **everywere**.
 
-## Optional Settings
+### Finding a Discord Role ID
 
-### Global API and Monitoring
+You will need the Role ID for crafty (`CRAFTY_ROLE_ID`).
+
+1.  **Enable Developer Mode in Discord:**
+      * Already activated for [Discord Channel ID](#finding-a-discord-channel-id)
+2.  **Get the Channel ID:**
+      * Go to your Discord server settings.
+      * Go to **"Roles"**.
+      * Right-click on the role name and click **"Copy Role ID"**.
+      * Paste this ID into the corresponding variable in your `.env`.
+
+#### Role Variables
+
+  * **`CRAFTY_ROLE_ID`**: The ID of the role allowed to use crafty commands. Leave blank to allow **everyone** to use these commands.
+
+### Crafty Configuration
+
+If you plan to use the Minecraft server control features, you will need to link the bot to your **Crafty Controller** instance.
+
+1. **CRAFTY_API_TOKEN**
+
+    - Login to your Crafty Panel.
+    - Go to Settings > API Tokens.
+    - Generate a new token with `COMMANDS` and `PLAYERS` permissions.
+    - Paste it into the corresponding variable in your `.env`.
+    - Leave blank to **disable** crafty feature. 
+
+2. **CRAFTY_API_BASE_URL**
+
+    This is the root URL of your Crafty API. It usually follows this format: `https://[YOUR_IP]:[PORT]/api/v2`.
+
+3. **CRAFTY_MINECRAFT_SERVER_ID**
+
+    - Login to your Crafty Panel.
+    - Click on the specific Minecraft server you want to control.
+    - Check the URL in your browser; the ID is the string of characters at the very end.
+    
+    ``` bash
+    # the ID is 609f07bc-2144-43c0-a1ae-1a91b4add919
+    https://.../panel/server_detail?id=609f07bc-2144-43c0-a1ae-1a91b4add919
+    ```
+
+## Others Settings
+
+### Global Configuration
+
+These variables are the core of your bot. They are mandatory for the application to authenticate with Discord and Twitch.
+
+| Variable | Description | Default Value |
+| :--- | :--- | :--- |
+| **`TWITCH_API_BASE_URL`** | The base entry point for Twitch Helix API requests. | `https://api.twitch.tv/helix` |
+| **`TWITCH_AUTH_URL`** | The endpoint used to generate the OAuth2 access token. | `https://id.twitch.tv/oauth2/token` |
+
+
+### Global API Settings
 
 These settings control the robustness and frequency of API requests.
 

@@ -6,7 +6,7 @@
 [![Node.js Version](https://img.shields.io/badge/Node.js-v18+-339933?logo=nodedotjs)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Deployment-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-A modular Discord bot that sends automatic "Live notifications" and daily "Top Clips" digests to your server.
+A modular Discord bot that sends automatic "Live notifications" and daily "Top Clips" digests to your server. You can also use discord commands to start, stop and restart a local crafty minecraft server.
 
 ## Table of Contents
 
@@ -30,6 +30,7 @@ A modular Discord bot that sends automatic "Live notifications" and daily "Top C
 * **Modular**: Easily enable or disable features like live alerts or clips directly from the configuration.
 * **No Spam**: Only one notification per stream, and one clip digest per day.
 * **Configurable**: Set check intervals, API timeouts, and cron schedules.
+* **Crafty Controller Integration**: Manage your Minecraft server directly from Discord with slash commands (/mc-start, /mc-stop, /mc-status).
 
 ## Quick Start
 
@@ -104,6 +105,8 @@ You should see something like this:
 [dotenv@17.2.3] injecting env (6) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
 [11/03/2025 10:00:01] [SUCCESS] Configuration validated
 [11/03/2025 10:00:02] [SUCCESS] Discord bot connected as YourBot#1234
+[11/03/2025 10:00:02] [INFO] [DISCORD] Refreshing slash commands...
+[11/03/2025 10:00:02] [SUCCESS] [DISCORD] Slash commands registered.
 [11/03/2025 10:00:02] [MONITOR] Monitoring your_channel every 60000ms
 [11/03/2025 10:00:02] [SCHEDULER] Scheduling daily clips job with schedule: 0 20 * * *
 [11/03/2025 10:00:03] [SUCCESS] Twitch access token obtained
@@ -111,6 +114,20 @@ You should see something like this:
 ```
 
 **To stop the bot:** Press `Ctrl + C` in the terminal
+
+## Commands Usage
+
+The bot uses Discord Slash Commands. These commands are registered automatically when the bot starts.
+
+### Crafty (Minecraft) Commands
+
+These commands are prefix with mc- and are only available if the Crafty feature is enabled.
+
+| Command | Description |
+| :--- | :--- |
+| **`/mc-start`** | Sends a start signal to your Minecraft server. |
+| **`/mc-stop`** | Sends a graceful shutdown signal to the server. |
+| **`/mc-status`** | Displays real-time stats (server status, number of players). |
 
 ## Project Structure
 
@@ -134,6 +151,7 @@ twitch-alert-discord-bot/
 │   ├── config/
 │   │   └── index.js             # Configuration and validation
 │   ├── services/
+│   │   ├── crafty.service.js    # Crafty API (Minecraft) integration
 │   │   ├── discord.service.js   # Discord API integration
 │   │   ├── monitor.service.js   # Continuous status checking
 │   │   ├── scheduler.service.js # Time-based job scheduling
@@ -156,8 +174,7 @@ twitch-alert-discord-bot/
 
 ## Security
 
-- Never share or commityour `.env` file
-- Never share your `DISCORD_TOKEN` or `TWITCH_CLIENT_SECRET`
+- Never share or commit your `.env` file
 - If you accidentally expose a token, regenerate it immediately
 
 ## License
@@ -166,4 +183,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 
 ## Contributing
 
-Feel free to fork this project and submit pull requests with improvements!
+Everyone is welcome to contribute to this project! You don't need to be a developer to help out:
+
+- **Share your feedback**: Use the issues to discuss your user experience or suggest improvements.
+- **Report a bug**: If something isn't working, let me know by opening an issue.
+- **Request a feature**: Have an idea for a new tool? I'd love to hear about it. Open a new issue.
+- **Code**: Whether you want to fix a bug or build a new feature, you can pick up an existing issue or propose a new one.
+
+For technical details on how to set up the project and our coding standards, please read our [Contributing Guidelines](docs/CONTRIBUTING.md).
+
+Check the [Issues](https://github.com/hugo-lanzafame/twitch-alert-discord-bot/issues) page to see what's currently being worked on.
