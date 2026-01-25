@@ -116,7 +116,7 @@ You should see something like this:
 
 The project uses a **Service-Oriented Architecture** based on separation by function :
 - The **Orchestrator** `index.js` manages everything, launching specialized services for core tasks.
-- Functionalities are strictly isolated based on their runtime needs:
+- **Functionalities Services** are strictly isolated based on their runtime needs:
   - `MonitorService` handles continuous, loop-based checks.
   - `SchedulerService` manages time-based cron jobs.
 - **Communication Services** (`twitch.service.js`, `discord.service.js`) act as shared data pipelines for all features.
