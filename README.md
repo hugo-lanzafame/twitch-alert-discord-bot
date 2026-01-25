@@ -125,8 +125,9 @@ These commands are prefix with mc- and are only available if the Crafty feature 
 
 | Command | Description |
 | :--- | :--- |
-| **`/mc-start`** | Sends a start signal to your Minecraft server. |
-| **`/mc-stop`** | Sends a graceful shutdown signal to the server. |
+| **`/mc-start`** | Start your Minecraft server. |
+| **`/mc-stop`** | Stop your Minecraft server. |
+| **`/mc-restart`** | Restart your Minecraft server. |
 | **`/mc-status`** | Displays real-time stats (server status, number of players). |
 
 ## Project Structure

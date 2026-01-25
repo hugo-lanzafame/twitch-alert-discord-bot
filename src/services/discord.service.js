@@ -159,6 +159,10 @@ class DiscordService {
                     await this.craftyService.stopMinecraftServer();
                     await interaction.editReply('Minecraft server shutdown...');
                     break;
+                case 'mc-restart':
+                    await this.craftyService.restartMinecraftServer();
+                    await interaction.editReply('Minecraft server restarting...');
+                    break;
                 case 'mc-status':
                     const stats = await this.craftyService.getMinecraftServerInfo();
                     await interaction.editReply({ embeds: [this.buildMinecraftStatusEmbed(stats)] });
