@@ -104,7 +104,8 @@ class DiscordService {
             commandList.push(
                 new SlashCommandBuilder().setName('mc-start').setDescription('Start Minecraft server'),
                 new SlashCommandBuilder().setName('mc-stop').setDescription('Stop Minecraft server'),
-                new SlashCommandBuilder().setName('mc-status').setDescription('Check Minecraft server status')
+                new SlashCommandBuilder().setName('mc-status').setDescription('Check Minecraft server status'),
+                new SlashCommandBuilder().setName('mc-restart').setDescription('Restart Minecraft server'),
             );
         }
 
