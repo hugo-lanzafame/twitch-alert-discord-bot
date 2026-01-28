@@ -45,10 +45,6 @@ class CraftyService {
                 Logger.success(`[CRAFTY] Action ${action} sent to minecraft server`);
                 return response.data;
             },
-            {
-                maxRetries: CONFIG.apiSettings.maxRetries,
-                baseDelay: CONFIG.apiSettings.retryDelay
-            }
         );
     }
 
