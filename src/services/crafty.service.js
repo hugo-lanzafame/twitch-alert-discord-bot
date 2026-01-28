@@ -27,7 +27,7 @@ class CraftyService {
                 keepAlive: true,
             }),
             headers: {
-                'X-Crafty-Token': `Bearer ${this.apiToken}`,
+                'X-Crafty-Token': this.apiToken,
                 'Content-Type': 'application/json'
             },
             timeout: CONFIG.apiSettings.requestTimeout
