@@ -23,10 +23,11 @@ class CraftyService {
         this.api = axios.create({
             baseURL: this.apiBaseUrl,
             httpsAgent: new https.Agent({
-                rejectUnauthorized: false
+                rejectUnauthorized: false,
+                keepAlive: true,
             }),
             headers: {
-                'Authorization': `Bearer ${this.apiToken}`,
+                'X-Crafty-Token': `Bearer ${this.apiToken}`,
                 'Content-Type': 'application/json'
             },
             timeout: CONFIG.apiSettings.requestTimeout
@@ -39,13 +40,24 @@ class CraftyService {
      * @returns {Promise<Object>}
      */
     async runAction(action) {
-        return await withRetry(
-            async () => {
-                const response = await this.api.post(`/servers/${this.minecraftServerId}/action/${action}`);
-                Logger.success(`[CRAFTY] Action ${action} sent to minecraft server`);
-                return response.data;
-            },
-        );
+        const executeRequest = async () => {
+            const response = await this.api.post(
+                `/servers/${this.minecraftServerId}/action/${action}`,
+                {},
+                { timeout: 60000  }
+            );
+            Logger.success(`[CRAFTY] Action ${action} successfully sent`);
+            return response.data;
+        };
+
+        if (action === CRAFTY_ACTIONS.START) {
+            return await executeRequest();
+        }
+        
+        return await withRetry(executeRequest, {
+            maxRetries: CONFIG.apiSettings.maxRetries,
+            baseDelay: CONFIG.apiSettings.retryDelay,
+        });
     }
 
     /**
