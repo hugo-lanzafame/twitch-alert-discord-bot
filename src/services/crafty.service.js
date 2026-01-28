@@ -18,8 +18,13 @@ class CraftyService {
         this.apiToken = CONFIG.features.crafty.apiToken;
         this.minecraftServerId = CONFIG.features.crafty.minecraftServerId;
 
+        const https = require('https');
+
         this.api = axios.create({
             baseURL: this.apiBaseUrl,
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            }),
             headers: {
                 'Authorization': `Bearer ${this.apiToken}`,
                 'Content-Type': 'application/json'

@@ -114,13 +114,20 @@ If you plan to use the Minecraft server control features, you will need to link 
 
     - Login to your Crafty Panel.
     - Go to Settings > API Tokens.
-    - Generate a new token with `COMMANDS` and `PLAYERS` permissions.
+    - Generate a new token with `Superuser` permission.
     - Paste it into the corresponding variable in your `.env`.
     - Leave blank to **disable** crafty feature. 
 
 2. **CRAFTY_API_BASE_URL**
 
-    This is the root URL of your Crafty API. It usually follows this format: `https://[YOUR_IP]:[PORT]/api/v2`.
+    This is the root URL of your Crafty API. It usually follows this format: `https://[YOUR_IP]:[PORT]/api/v2`. 
+    The `YOUR_IP` you should use depends on how you are running the bot:
+
+      | Setup | YOUR_IP | Reason |
+      | :--- | :--- | :--- |
+      | **Bot in Docker (Same machine)** | `host.docker.internal` | Allows the container to "exit" its virtual network to reach the host's Crafty API. |
+      | **Bot in Node.js (Same machine)** | `localhost` or `127.0.0.1` | The bot and Crafty share the same local network interface. |
+      | **Different Machines** | `192.168.1.XX` (Local IP) | Use the actual LAN IP of the machine where Crafty is installed. |
 
 3. **CRAFTY_MINECRAFT_SERVER_ID**
 

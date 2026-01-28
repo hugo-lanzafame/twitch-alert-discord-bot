@@ -68,20 +68,29 @@ If you want your bot to run 24/7 on a server (VPS, Raspberry Pi, or dedicated se
 
 ```bash
 # Build and start the bot
-docker-compose up -d
+docker compose up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop the bot
-docker-compose stop
+docker compose stop
 
 # Restart the bot
-docker-compose restart
+docker compose restart
 
 # Update
 git pull
-docker-compose up -d --build
+docker compose up -d --build
+```
+**If you have UFW enabled on your server and want to use the Crafty features**, you must authorize the incoming traffic on the API port (default is `8443`, use yours if different).
+
+```bash
+## If Crafty server and Bot are on the same machine
+sudo ufw allow from 172.16.0.0/12 to any port 8443 comment 'Allow Docker to Crafty'
+
+# If Crafty server and Bot are on different machines
+sudo ufw allow from [BOT_SERVER_IP] to any port 8443 comment 'Allow Remote Bot to Crafty'
 ```
 
 #### Option 2: With Node.js
@@ -146,6 +155,7 @@ The project uses a **Service-Oriented Architecture** based on separation by func
 ```bash
 twitch-alert-discord-bot/
 ├── docs/
+│   ├── CONTRIBUTING.md          # Contribution guide
 │   └── ENV_SETUP.md             # Environement setup guide
 ├── node_modules/                # Dependencies (auto-generated)
 ├── src/
