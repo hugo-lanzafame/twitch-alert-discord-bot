@@ -4,9 +4,9 @@ const Logger = require('../utils/logger');
 const { withRetry } = require('../utils/retry');
 
 const CRAFTY_ACTIONS = {
-    START: 'start',
-    STOP: 'stop',
-    RESTART: 'restart'
+    START: 'start_server',
+    STOP: 'stop_server',
+    RESTART: 'restart_server'
 };
 
 /**
@@ -27,7 +27,7 @@ class CraftyService {
                 keepAlive: true,
             }),
             headers: {
-                'X-Crafty-Token': this.apiToken,
+                'Authorization': `Bearer ${this.apiToken}`,
                 'Content-Type': 'application/json'
             },
             timeout: CONFIG.apiSettings.requestTimeout

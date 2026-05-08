@@ -165,7 +165,8 @@ class DiscordService {
                     await interaction.editReply('Minecraft server restarting...');
                     break;
                 case 'mc-status':
-                    const stats = await this.craftyService.getMinecraftServerInfo();
+                    const response = await this.craftyService.getMinecraftServerInfo();
+                    const stats = response?.data;
                     await interaction.editReply({ embeds: [this.buildMinecraftStatusEmbed(stats)] });
                     break;
             }
@@ -184,7 +185,7 @@ class DiscordService {
             .setTitle('Minecraft server')
             .addFields(
                 { name: 'Statut', value: stats.running ? 'Online' : 'Offline', inline: true },
-                { name: 'Players', value: `${stats.online_players || 0}/${stats.max_players || 0}`, inline: true }
+                { name: 'Players', value: `${stats.online || 0}/${stats.max || 0}`, inline: true }
             )
             .setTimestamp();
     }
