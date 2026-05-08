@@ -14,19 +14,27 @@ class SchedulerService {
         this.twitchService = twitchService;
         this.discordService = discordService;
         this.scheduledTask = null;
+
+        // Use global config settings
+        this.twitchUsername = CONFIG.twitch.username;
+
+        // Use feature top clips config settings
+        this.topClipsIsEnabled = CONFIG.features.topClips.isEnabled;
+        this.topClipsSchedule = CONFIG.features.topClips.schedule;
+        this.topClipsCount = CONFIG.features.topClips.count;
     }
 
     /**
      * Start the scheduled tasks
      */
     start() {
-        if (!CONFIG.features.topClips.isEnabled) {
+        if (!this.topClipsIsEnabled) {
             Logger.info('Top clips job is disabled (TOP_CLIPS_CHANNEL_ID not set)');
 
             return;
         }
 
-        const schedule = CONFIG.features.topClips.schedule;
+        const schedule = this.topClipsSchedule;
         
         if (!cron.validate(schedule)) {
             Logger.error(`Invalid cron schedule: ${schedule}. Clips job will not run.`);
@@ -61,12 +69,9 @@ class SchedulerService {
     async runTopClipsJob() {
         Logger.info('[SCHEDULER] Running top clips job...');
         try {
-            const { username } = CONFIG.twitch;
-            const { count } = CONFIG.features.topClips;
-            
             const clips = await this.twitchService.getTopClips(
-                username,
-                count,
+                this.twitchUsername,
+                this.topClipsCount,
                 24 // Time period in hours
             );
 
@@ -75,7 +80,7 @@ class SchedulerService {
                 return;
             }
 
-            const topClips = clips.slice(0, count);
+            const topClips = clips.slice(0, this.topClipsCount);
             
             await this.discordService.sendTopClips(topClips);
         } catch (error) {

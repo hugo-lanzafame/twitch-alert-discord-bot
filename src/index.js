@@ -1,8 +1,9 @@
-const { CONFIG, validateConfig } = require('./config');
+const { validateConfig } = require('./config');
 const TwitchService = require('./services/twitch.service');
 const DiscordService = require('./services/discord.service');
 const SchedulerService = require('./services/scheduler.service');
-const MonitorService = require('./services/monitor.service'); // New Monitor Service
+const MonitorService = require('./services/monitor.service');
+const CraftyService = require('./services/crafty.service');
 const Logger = require('./utils/logger');
 
 /**
@@ -10,11 +11,12 @@ const Logger = require('./utils/logger');
  */
 class BotOrchestrator {
     constructor() {
-        // Initialize Core Services
+        // Initialize Communication Services
         this.twitchService = new TwitchService();
-        this.discordService = new DiscordService();
+        this.craftyService = new CraftyService();
+        this.discordService = new DiscordService(this.craftyService);
         
-        // Initialize Feature Services (Dependency Injection)
+        // Initialize Functionalities Services
         this.monitorService = new MonitorService(this.twitchService, this.discordService);
         this.schedulerService = new SchedulerService(this.twitchService, this.discordService); 
     }

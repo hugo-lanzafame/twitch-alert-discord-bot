@@ -14,42 +14,44 @@ class MonitorService {
         this.discordService = discordService;
         this.isLive = false;
         this.checkInProgress = false;
-        this.checkInterval = null;
-        
-        // Use liveNotification config settings
-        this.username = CONFIG.twitch.username;
-        this.intervalTime = CONFIG.features.liveNotification.checkInterval;
-        this.isEnabled = CONFIG.features.liveNotification.isEnabled;
+        this.checkTimer = null;
+
+        // Use global config settings
+        this.twitchUsername = CONFIG.twitch.username;
+
+        // Use feature liveNotification config settings
+        this.liveNotificationCheckInterval = CONFIG.features.liveNotification.checkInterval;
+        this.liveNotificationsEnabled = CONFIG.features.liveNotification.isEnabled;
     }
 
     /**
      * Start the monitoring loop
      */
     start() {
-        if (!this.isEnabled) {
+        if (!this.liveNotificationsEnabled) {
             Logger.info('[MONITOR] Live notification feature is disabled.');
 
             return;
         }
         
-        Logger.info(`[MONITOR] Monitoring ${this.username} every ${this.intervalTime}ms`);
+        Logger.info(`[MONITOR] Monitoring ${this.twitchUsername} every ${this.liveNotificationCheckInterval}ms`);
         
         // First check immediately
         this.checkStreamStatus();
         
         // Schedule regular checks
-        this.checkInterval = setInterval(() => {
+        this.checkTimer = setInterval(() => {
             this.checkStreamStatus();
-        }, this.intervalTime);
+        }, this.liveNotificationCheckInterval);
     }
 
     /**
      * Stop the monitoring loop
      */
     stop() {
-        if (this.checkInterval) {
-            clearInterval(this.checkInterval);
-            this.checkInterval = null;
+        if (this.checkTimer) {
+            clearInterval(this.checkTimer);
+            this.checkTimer = null;
             Logger.info('[MONITOR] Monitoring stopped');
         }
     }
@@ -67,7 +69,7 @@ class MonitorService {
         this.checkInProgress = true;
 
         try {
-            const streamData = await this.twitchService.getStreamData(this.username);
+            const streamData = await this.twitchService.getStreamData(this.twitchUsername);
             await this.handleStreamStatusChange(streamData);
         } catch (error) {
             Logger.error('[MONITOR] Error checking stream status:', error.message);
@@ -95,11 +97,11 @@ class MonitorService {
             }
         } else if (!isNowLive && wasLive) {
             this.isLive = false;
-            Logger.info(`[MONITOR] ${this.username} stream has ended`);
+            Logger.info(`[MONITOR] ${this.twitchUsername} stream has ended`);
         } else if (isNowLive) {
             Logger.debug(`[MONITOR] ${streamData.user_name} is still live`);
         } else {
-            Logger.debug(`[MONITOR] ${this.username} is offline`);
+            Logger.debug(`[MONITOR] ${this.twitchUsername} is offline`);
         }
     }
 }

@@ -9,8 +9,10 @@ const CONFIG = {
         clientId: process.env.TWITCH_CLIENT_ID,
         clientSecret: process.env.TWITCH_CLIENT_SECRET,
         username: process.env.TWITCH_USERNAME?.toLowerCase(),
+        apiBaseUrl: process.env.TWITCH_API_BASE_URL,
+        authUrl: process.env.TWITCH_AUTH_URL,
     },
-    api: {
+    apiSettings: {
         maxRetries: parseInt(process.env.API_MAX_RETRIES || '3', 10),
         retryDelay: parseInt(process.env.API_RETRY_DELAY || '2000', 10),
         requestTimeout: parseInt(process.env.API_REQUEST_TIMEOUT || '10000', 10),
@@ -31,6 +33,15 @@ const CONFIG = {
             schedule: process.env.TOP_CLIPS_SCHEDULE || '0 20 * * *',
             count: parseInt(process.env.TOP_CLIP_COUNT || '5', 10),
         },
+        crafty: {
+            // Feature is enabled IF the channelId is provided
+            isEnabled: !!process.env.CRAFTY_API_TOKEN,
+            apiToken: process.env.CRAFTY_API_TOKEN,
+            apiBaseUrl: process.env.CRAFTY_API_BASE_URL,
+            minecraftServerId: process.env.CRAFTY_MINECRAFT_SERVER_ID,
+            channelId: process.env.CRAFTY_CHANNEL_ID,
+            roleId: process.env.CRAFTY_ROLE_ID,
+        }
     },
 };
 
@@ -44,6 +55,8 @@ function validateConfig() {
         'TWITCH_CLIENT_ID',
         'TWITCH_CLIENT_SECRET',
         'TWITCH_USERNAME',
+        'TWITCH_API_BASE_URL',
+        'TWITCH_AUTH_URL',
         'API_MAX_RETRIES',
         'API_RETRY_DELAY',
         'API_REQUEST_TIMEOUT',
@@ -61,6 +74,14 @@ function validateConfig() {
             'TOP_CLIPS_CHANNEL_ID',
             'TOP_CLIPS_SCHEDULE',
             'TOP_CLIP_COUNT'
+        );
+    }
+
+    if (CONFIG.features.crafty.isEnabled) {
+        requiredKeys.push(
+            'CRAFTY_API_TOKEN',
+            'CRAFTY_API_BASE_URL',
+            'CRAFTY_MINECRAFT_SERVER_ID',
         );
     }
 

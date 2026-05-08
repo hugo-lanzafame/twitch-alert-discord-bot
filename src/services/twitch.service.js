@@ -11,8 +11,13 @@ class TwitchService {
         this.accessToken = null;
         this.tokenExpiresAt = null;
         this.userId = null;
-        this.baseURL = 'https://api.twitch.tv/helix';
-        this.authURL = 'https://id.twitch.tv/oauth2/token';
+        
+        // Use twitch config settings
+        this.apiBaseUrl = CONFIG.twitch.apiBaseUrl;
+        this.authUrl = CONFIG.twitch.authUrl;
+        this.clientId = CONFIG.twitch.clientId;
+        this.clientSecret = CONFIG.twitch.clientSecret;
+        this.username = CONFIG.twitch.username;
     }
 
     /**
@@ -36,15 +41,15 @@ class TwitchService {
 
         try {
             const response = await axios.post(
-                this.authURL,
+                this.authUrl,
                 null,
                 {
                     params: {
-                        client_id: CONFIG.twitch.clientId,
-                        client_secret: CONFIG.twitch.clientSecret,
+                        client_id: this.clientId,
+                        client_secret: this.clientSecret,
                         grant_type: 'client_credentials'
                     },
-                    timeout: CONFIG.api.requestTimeout
+                    timeout: CONFIG.apiSettings.requestTimeout
                 }
             );
 
@@ -75,16 +80,16 @@ class TwitchService {
         try {
             const token = await this.getAccessToken();
             const response = await axios.get(
-                `${this.baseURL}/users`,
+                `${this.apiBaseUrl}/users`,
                 {
                     headers: {
-                        'Client-ID': CONFIG.twitch.clientId,
+                        'Client-ID': this.clientId,
                         'Authorization': `Bearer ${token}`
                     },
                     params: {
                         login: username
                     },
-                    timeout: CONFIG.api.requestTimeout
+                    timeout: CONFIG.apiSettings.requestTimeout
                 }
             );
 
@@ -115,24 +120,24 @@ class TwitchService {
             const streamData = await withRetry(
                 async () => {
                     const response = await axios.get(
-                        `${this.baseURL}/streams`,
+                        `${this.apiBaseUrl}/streams`,
                         {
                             headers: {
-                                'Client-ID': CONFIG.twitch.clientId,
+                                'Client-ID': this.clientId,
                                 'Authorization': `Bearer ${token}`
                             },
                             params: {
                                 user_login: username
                             },
-                            timeout: CONFIG.api.requestTimeout
+                            timeout: CONFIG.apiSettings.requestTimeout
                         }
                     );
 
                     return response.data.data[0] || null;
                 },
                 {
-                    maxRetries: CONFIG.api.maxRetries,
-                    baseDelay: CONFIG.api.retryDelay
+                    maxRetries: CONFIG.apiSettings.maxRetries,
+                    baseDelay: CONFIG.apiSettings.retryDelay
                 }
             );
 
@@ -171,10 +176,10 @@ class TwitchService {
             const clipsData = await withRetry(
                 async () => {
                     const response = await axios.get(
-                        `${this.baseURL}/clips`,
+                        `${this.apiBaseUrl}/clips`,
                         {
                             headers: {
-                                'Client-ID': CONFIG.twitch.clientId,
+                                'Client-ID': this.clientId,
                                 'Authorization': `Bearer ${token}`
                             },
                             params: {
@@ -183,15 +188,15 @@ class TwitchService {
                                 ended_at: endTime,
                                 first: count
                             },
-                            timeout: CONFIG.api.requestTimeout
+                            timeout: CONFIG.apiSettings.requestTimeout
                         }
                     );
                     // Twitch API automatically sorts by views (which is perfect)
                     return response.data.data || [];
                 },
                 {
-                    maxRetries: CONFIG.api.maxRetries,
-                    baseDelay: CONFIG.api.retryDelay
+                    maxRetries: CONFIG.apiSettings.maxRetries,
+                    baseDelay: CONFIG.apiSettings.retryDelay
                 }
             );
 
